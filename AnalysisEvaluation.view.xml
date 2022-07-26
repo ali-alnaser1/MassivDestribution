@@ -1,0 +1,222 @@
+<mvc:View controllerName="sap.ui.pimas.controller.AnalysisEvaluation" displayBlock="true"
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:core="sap.ui.core"
+	xmlns:form="sap.ui.layout.form"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:viz="sap.viz.ui5.controls"
+	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+	xmlns:viz.data="sap.viz.ui5.data"
+	xmlns:ux="sap.uxap"
+	xmlns:commons="sap.suite.ui.commons"
+	xmlns:table="sap.ui.table">
+
+	<ux:ObjectPageLayout id="headerPage" headerContentPinnable="false" showHeaderContent="true" showTitleInHeaderContent="false" upperCaseAnchorBar="true" preserveHeaderStateOnScroll="false" visible="{userPermission>/analysysEvaluation/read}">
+	<ux:headerTitle>
+		<core:Fragment fragmentName="sap.ui.pimas.view.PIMAS_GenericHeader" type="XML" />
+	</ux:headerTitle>
+	<ux:headerContent>
+        <HBox >
+			<VBox class="sapUiLargeMarginEnd">
+				<Text text="{i18n>labelDescription}:" visible="{HeaderModel>/description}"/>
+				<Text class="sapUiTinyMarginTop" text="{HeaderModel>/descriptionText}" visible="{HeaderModel>/description}"/>
+			</VBox>
+		</HBox>
+	</ux:headerContent>
+	<ux:sections>
+	<ux:ObjectPageSection showTitle="false">
+		<ux:subSections>
+			<ux:ObjectPageSubSection>
+				<ux:blocks>
+					<IconTabBar
+                    id="idIconTabBar"
+                    select=".onFilterSelect"
+                    class="sapUiResponsiveContentPadding">
+                    <items>
+                        <IconTabFilter
+                            showAll="true"
+                            count="{countModel>/countAll}"
+                            text="Evaluations"
+                            key="All" />
+                        <IconTabSeparator />
+                        <IconTabFilter
+                            icon="sap-icon://request"
+                            iconColor="Negative"
+                            count="{/SearchViewEvaluationRun/EvaluationRunStatus}"
+                            text="Error"
+                            key="ERROR" />
+                        <IconTabFilter
+                            icon="sap-icon://process"
+                            iconColor="Critical"
+                            count="{/SearchViewEvaluationRun/EvaluationRunStatus}"
+                            text="In Progress"
+                            key="IN_PROGRESS" />
+                        <IconTabFilter
+                            icon="sap-icon://complete"
+                            iconColor="Positive"
+                            count="{countCompletedModel>/countCompleted}"
+                            text="Completed"
+                            key="COMPLETED" />
+                                
+                    </items>
+                    <content>
+                        <Table id="evaluationTable" items = "{path: 'evaluationModel>/',
+                                                        sorter: {
+                                                            path: 'SystemName',
+                                                            group: true
+                                                        }
+                                                            }" 
+                                                            mode="SingleSelectLeft">
+                            <headerToolbar id="systemHeader">
+                                <OverflowToolbar>
+                                    <ToolbarSpacer/>
+                                    <OverflowToolbarButton icon="sap-icon://add" type="Transparent" press="onFilterFileName"/>
+                                    <OverflowToolbarButton icon="sap-icon://delete" type="Transparent" press="onDeleteEntry"/>
+                                    <OverflowToolbarButton icon="sap-icon://refresh" type="Transparent" press="onRefresh"/>
+                                    
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <columns>
+                                <Column minScreenWidth="Tablet" demandPopin="true">
+                                    <Text text="Name" />
+                                </Column>
+                                <Column minScreenWidth="Tablet" demandPopin="true">
+                                    <Text text="Description" />
+                                </Column>
+                                <Column minScreenWidth="Tablet" demandPopin="true">
+                                    <Text text="File Name" />
+                                </Column>
+                                <Column minScreenWidth="Tablet" demandPopin="true">
+                                    <Text text="{i18n>labelTimestamp}" />
+                                </Column>
+                                <Column minScreenWidth="Tablet" demandPopin="true">
+                                    <Text text="{i18n>labelSystemId}" />
+                                </Column>
+                                <Column minScreenWidth="Tablet" demandPopin="true">
+                                    <Text text="{i18n>labelSystemName}" />
+                                </Column>
+                                <Column minScreenWidth="Tablet" demandPopin="true">
+                                    <Text text="Scenarios" />
+                                </Column>
+                                <Column minScreenWidth="Tablet" demandPopin="true">
+                                    <Text text="{i18n>labelStatus}" />
+                                </Column>
+                                
+                                <Column width="3.9rem" demandPopin="true">
+                                    <Text text="Actions" />
+                                </Column>
+                                <Column  width="3.8rem" demandPopin="true">
+                                    <Text text="" />
+                                </Column>
+                                <Column  width="3.8rem" demandPopin="true">
+                                    <Text text="" />
+                                </Column>
+                                <Column  width="5rem" demandPopin="true">
+                                    <Text text="" />
+                                </Column>
+                                <Column  width="1rem" demandPopin="true">
+                                    <Text text="" />
+                                </Column>
+    
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <ObjectAttribute text="Place Holder"/>
+                                        <ObjectAttribute text="Place Holder"/>
+                                        <ObjectAttribute text="{evaluationModel>FileName}"/>
+                                        <ObjectAttribute text="{evaluationModel>EvaluationRunEndTime}"/>
+                                        <ObjectAttribute text="{evaluationModel>SystemKey}"/>
+                                        <ObjectAttribute text="{evaluationModel>SystemName}"/>
+                                        <ObjectAttribute text="Place Holder"/>
+                                        <ObjectAttribute text="{evaluationModel>EvaluationRunStatus}"/>
+
+                                        <Button icon="sap-icon://bbyd-dashboard" press="navToDashboard" id="goButton" tooltip="{i18n>labelNavToDashboard}" type="Transparent"/>
+                                        <Button icon="sap-icon://detail-view" press="navToDashboard" id="search" tooltip="{i18n>labelNavToDashboard}" type="Transparent"/>
+                                        <Button icon="sap-icon://begin" press="" id="playButton" tooltip="{i18n>labelNavToDashboard}" type="Transparent"/>
+                                        <MenuButton icon="sap-icon://action" tooltip="{i18n>labelExport}" type="Transparent">
+                                            <menu>
+                                                <Menu itemSelected="onPressDownload">
+                                                  <MenuItem text="xlsx" icon="sap-icon://excel-attachment" tooltip="{i18n>labelDownloadExcel}"/>
+                                                  <MenuItem text="pdf" icon="sap-icon://pdf-attachment" tooltip="{i18n>labelDownloadPdf}"/>
+                                                </Menu>
+                                              </menu>
+                                        </MenuButton>
+    
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </content>
+                </IconTabBar>
+
+				
+
+
+
+<!-- 
+            <Table id="evaluationTable" items = "{path:'/SearchViewEvaluationRun'}" mode="SingleSelectLeft">
+						<headerToolbar id="systemHeader">
+							<OverflowToolbar>
+								<ToolbarSpacer/>
+								<OverflowToolbarButton icon="sap-icon://synchronize" type="Transparent" press="onRefresh"/>
+								<OverflowToolbarButton icon="sap-icon://delete" type="Transparent" press="onDeleteEntry"/>
+							</OverflowToolbar>
+						</headerToolbar>
+						<columns>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>labelSystemId}" />
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>labelSystemName}" />
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>labelFilename}" />
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>labelTimestamp}" />
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>labelStatus}" />
+							</Column>
+							<Column width="4rem" demandPopin="true">
+								<Text text="" />
+							</Column>
+							<Column  width="5rem" demandPopin="true">
+								<Text text="  " />
+							</Column>
+							<Column  width="1rem" demandPopin="true">
+								<Text text="" />
+							</Column>
+
+						</columns>
+						<items>
+							<ColumnListItem>
+								<cells>
+ 									<ObjectAttribute text="{SystemKey}"/>
+									<ObjectAttribute text="{SystemName}"/>
+									<ObjectAttribute text="{FileName}"/>
+									<ObjectAttribute text="{EvaluationRunEndTime}"/>
+									<ObjectAttribute text="{EvaluationRunStatus}"/>
+
+									<Button icon="sap-icon://sys-monitor" press="navToDashboard" id="goButton" tooltip="{i18n>labelNavToDashboard}"/>
+									<MenuButton icon="sap-icon://action" tooltip="{i18n>labelExport}">
+										<menu>
+											<Menu itemSelected="onPressDownload">
+											  <MenuItem text="xlsx" icon="sap-icon://excel-attachment" tooltip="{i18n>labelDownloadExcel}"/>
+											  <MenuItem text="pdf" icon="sap-icon://pdf-attachment" tooltip="{i18n>labelDownloadPdf}"/>
+											</Menu>
+										  </menu>
+									</MenuButton>
+
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+ -->				</ux:blocks>
+            </ux:ObjectPageSubSection>
+		</ux:subSections>
+	</ux:ObjectPageSection>
+	</ux:sections>
+	</ux:ObjectPageLayout>
+</mvc:View>
